@@ -29,26 +29,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-7fk!^ke_z%97-at2-fff=%v+mk!7)&0(!bvku5)v#&*olpu#gp'
+SECRET_KEY = config('DJANGO_SECRET_KEY')
 FRONEND_URL = config('FRONTEND_URL')
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
+
+ALLOWED_HOSTS = [FRONEND_URL]  # Customize this with your domain or list of domains
 
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:4000",
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:3001",
-    "http://192.168.216.250:3000",
-    "http://192.168.0.2:3000",
-    "http://192.168.0.5:3000",
-    "http://192.168.0.11:5173",
-    "http://192.168.68.194:5173",
     FRONEND_URL
 ]
 
@@ -114,11 +105,14 @@ WSGI_APPLICATION = 'Backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'ModelGrader.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',  # Adjust for your database type
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -144,7 +138,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'UTC+7'
 
 USE_I18N = True
 
@@ -171,7 +165,7 @@ REST_FRAMEWORK = {
 # AUTH_USER_MODEL = 'api.Account'
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=config('JWT_ACCESS_TOKEN_LIFETIME_MINUTES')),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=config('JWT_REFRESH_TOKEN_LIFETIME_DAYS')),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
